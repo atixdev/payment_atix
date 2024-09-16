@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo >
+    <record id="payment_provider_atix" model="payment.provider">
+        <field name="name">ATIX</field>
+        <field name="code">atix</field>
+        <field name="image_128" type="base64" file="payment_atix/static/src/img/icon.png"/>
+        <field name="pre_msg">
+            <![CDATA[<p>Se abrirá una ventana emergente para realizar sú pago.</p>]]>
+        </field>
+        <field name="atix_apikey_pen">value_pen</field>
+        <field name="atix_apikey_usd">value_usd</field>
+        <field name="redirect_form_view_id" ref="payment_atix.redirect_form"/>
+        <field name="payment_method_ids"
+               eval="[(6, 0, [
+                   ref('payment.payment_method_card')
+               ])]"/>
+
+    </record>
+</odoo>

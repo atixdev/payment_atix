@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <record id="view_form_payment_provider_atix" model="ir.ui.view">
+        <field name="name">view.form.payment.provider.atix</field>
+        <field name="model">payment.provider</field>
+        <field name="inherit_id" ref="payment.payment_provider_form" />
+        <field name="arch" type="xml">
+            <group name="provider_credentials" position='inside'>
+                <group invisible="code != 'atix'">
+                    <field name="atix_apikey_pen"/>
+                    <field name="atix_apikey_usd"/>
+                    <field name="payment_atix_return_url"/>
+                    <field name="redirect_form_view_id"/>
+                    <field name="support_refund"/>
+                </group>
+            </group>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_form_payment_transaction_atix" model="ir.ui.view">
+        <field name="name">view.form.payment.transaction.form</field>
+        <field name="model">payment.transaction</field>
+        <field name="inherit_id" ref="payment.payment_transaction_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//form/sheet" position="inside">
+                <group invisible="provider_code != 'atix'" string="ATIX Status">
+                    <field name="atix_token" readonly="1" force_save="1"/>
+                    <field name="atix_reference_code" readonly="1" force_save="1"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="redirect_form">
+        <form t-att-action="api_url" method="post">
+            <input type="hidden" name='User' t-att-value="User"/>
+            <input type="hidden" name='Password' t-att-value="Password"/>
+            <input type="hidden" name='Version' t-att-value="Version"/>
+            <input type="hidden" name='Data' t-att-value="Data"/>
+            <input type="hidden" name='Apikey' t-att-value="Apikey"/>
+        <!--
+            <input type="hidden" name='gbc_apikey' t-att-value="gbc_apikey"/>
+            <input type="hidden" name='reference' t-att-value='reference'/>
+            <input type="hidden" name='amount' t-att-value='amount'/>
+            <input type="hidden" name='provider' t-att-value='provider'/>
+            <input type="hidden" name='partner_id' t-att-value='partner_id'/>
+            <input type="hidden" name='partner_name' t-att-value='partner_name'/>
+            <input type="hidden" name='partner_email' t-att-value='partner_email'/>
+            <input type="hidden" name='currency_id' t-att-value='currency_id'/>
+            <input type="hidden" name='currency_name' t-att-value='currency_name'/>
+            -->
+        </form>
+    </template>
+
+
+</odoo>
