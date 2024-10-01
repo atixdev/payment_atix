@@ -2,9 +2,10 @@
     "name":"Proveedor de pago: ATIX",
     'category': 'Accounting/Payment Providers',
     "depends":[
-        "payment",
         "base_automation",
-        "website"
+        "payment",
+        "website",
+
     ],
     "author":"ATIX",
     'post_init_hook': 'post_init_hook',
