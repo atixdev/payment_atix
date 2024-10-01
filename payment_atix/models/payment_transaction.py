@@ -67,7 +67,7 @@ class PaymentTransaction(models.Model):
 
         payload = json.dumps({"Token": self.atix_token})
         headers = {
-            'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            'content-type': 'text/plain',
         }
 
         response = requests.request("POST", url, headers=headers, data=payload)
