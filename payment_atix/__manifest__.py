@@ -1,13 +1,24 @@
 {
     "name":"Proveedor de pago: ATIX",
     'category': 'Accounting/Payment Providers',
-    "depends":[
-        "base_automation",
-        "payment",
-        "website",
+    "summary": 'Integración con la pasarela de pago Atix',
+    'description': """
+        Este módulo permite la integración de Odoo con la pasarela de pago Atix, facilitando la gestión de pagos en línea de manera segura y eficiente.
 
+        Requisitos:
+        - Instancia de Odoo Community o Enterprise
+        - Alojamiento “on premise” (Local, en la nube) u “odoo.sh”
+        - Tener la aplicación "Proveedor de pago: ATIX" dentro de la lista de aplicaciones del sistema
+        - API KEY (Soles y/o dólares) de comercio Global Bridge Connections
+
+    """,
+    "depends":[
+        "payment",
+        "base_automation",
+        "website",
+        "website_sale"
     ],
-    "author":"ATIX",
+    'images': ['static/description/banner.png'],
     'post_init_hook': 'post_init_hook',
     'uninstall_hook': 'uninstall_hook',
     "data":[
