@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Instalación y Configuración del Módulo Pasarela de Pago Atix</title>
+    <title>Guía de Instalación y Configuración del Módulo Pasarela de Pago Atix</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -23,82 +23,90 @@
     </style>
 </head>
 <body>
-    <h1>Instalación y Configuración del Módulo Pasarela de Pago Atix</h1>
+    <h1>Guía de Instalación y Configuración del Módulo Pasarela de Pago Atix</h1>
 
     <div class="section">
-        <h2>Requisitos</h2>
+        <h2>Requisitos Previos</h2>
         <ul>
-            <li>Instancia de Odoo Community o Enterprise</li>
-            <li>Alojamiento “on premise” (Local, en la nube) u “odoo.sh”</li>
-            <li>Tener la aplicación <strong>Proveedor de pago: ATIX</strong> dentro de la lista de aplicaciones del sistema</li>
-            <li>
-                API KEY (Soles y/o dólares) de comercio:
+            <li>Contar con una instancia de Odoo (Community o Enterprise).</li>
+            <li>El sistema puede estar alojado de forma local ("on premise"), en la nube o en <strong>odoo.sh</strong>.</li>
+            <li>Verificar que la aplicación <strong>Proveedor de pago: ATIX</strong> esté disponible en la lista de aplicaciones del sistema.</li>
+            <li>Obtener las <strong>API KEY</strong> (en soles y/o dólares) desde el dashboard de Atix:
                 <ul>
-                    <li>Obten el API KEY en <a href="https://dashboard.atix.com.pe/login" target="_blank">https://dashboard.atix.com.pe/login</a></li>
+                    <li>Accede a <a href="https://dashboard.atix.com.pe/login" target="_blank">https://dashboard.atix.com.pe/login</a> para generar tus credenciales.</li>
                 </ul>
-                <div style="text-align: center;">
-                    <div style="margin: 20px 0;">
-                        <img src="image4.png" alt="Odoo Enterprise" class="screenshot" style="width: 100%; max-width: 1000px;"/>
-                    </div>
-                </div>
             </li>
         </ul>
     </div>
 
+    <div class="section">
+        <h2>Pasos para la Instalación</h2>
+        <ol>
+            <li>Accede al menú <strong>Aplicaciones</strong> en tu instancia de Odoo.</li>
+            <li>Busca e instala el módulo <strong>Proveedor de pago: ATIX</strong>.</li>
+        </ol>
+    </div>
 
     <div class="section">
         <h2>Pasos para la Configuración</h2>
         <ol>
-            <li>Ir a <strong>Aplicaciones</strong> e instalar el módulo <strong>Proveedor de pago: ATIX</strong>.</li>
-            <li>Ir a <strong>Sitio Web -> Configuración -> Proveedores de Pago</strong> y activar <strong>Proveedor de pago: ATIX</strong>.</li>
-            <li>Habilitar el proveedor de pago y establecer los API KEY en Dólares y/o Soles. El módulo funciona tanto si es solo en soles, solo en dólares, o ambos establecidos a la vez.
+            <li>Dirígete a <strong>Sitio Web -> Configuración -> Proveedores de Pago</strong>.</li>
+            <li>Activa el proveedor de pago <strong>ATIX</strong>.</li>
+            <li>Configura las <strong>API KEY</strong> en dólares y/o soles según corresponda:
+                <ul>
+                    <li>El módulo funciona con una o ambas monedas configuradas.</li>
+                </ul>
                 <div style="text-align: center;">
                     <div style="margin: 20px 0;">
-                        <img src="image1.png" alt="Odoo Enterprise" class="screenshot" style="width: 100%; max-width: 1000px;"/>
+                        <img src="image1.png" alt="Configuración de API KEY" class="screenshot" style="width: 100%; max-width: 1000px;"/>
                     </div>
                 </div>
             </li>
-            <li>
-                Si las API KEY son de producción, cambia el estado a "Habilitado". Si son de pruebas, cambia el estado a "Modo de prueba".
+            <li>Define el estado del proveedor de pago:
+                <ul>
+                    <li>Si las <strong>API KEY</strong> son de producción, selecciona el estado <strong>Habilitado</strong>.</li>
+                    <li>Si las <strong>API KEY</strong> son de pruebas, selecciona el estado <strong>Modo de prueba</strong>.</li>
+                </ul>
                 <div style="text-align: center;">
                     <div style="margin: 20px 0;">
-                        <img src="image2.png" alt="Odoo Enterprise" class="screenshot" style="width: 100%; max-width: 1000px;"/>
+                        <img src="image2.png" alt="Estado del proveedor de pago" class="screenshot" style="width: 100%; max-width: 1000px;"/>
                     </div>
                 </div>
             </li>
-            <li>
-                Copiar la url de redireccionamiento generada en Odoo y pegarla en los campos <strong>Redirección si la transacción es aprobada y Redirección si la transacción es rechazada</strong> en el dashboard de Atix.
+            <li>Copia la URL de redireccionamiento generada en Odoo y pégala en los campos correspondientes del dashboard de Atix:
+                <ul>
+                    <li><strong>Redirección si la transacción es aprobada</strong></li>
+                    <li><strong>Redirección si la transacción es rechazada</strong></li>
+                </ul>
                 <div style="text-align: center;">
                     <div style="margin: 20px 0;">
-                        <img src="image3.png" alt="Odoo Enterprise" class="screenshot" style="width: 100%; max-width: 1000px;"/>
+                        <img src="image3.png" alt="Configuración de redirección" class="screenshot" style="width: 100%; max-width: 1000px;"/>
                     </div>
                 </div>
             </li>
         </ol>
-        
     </div>
 
-
     <div class="section">
-        <h2>Pruebas</h2>
-        <p>Para verificar el funcionamiento del método de pago, sigue estos pasos:</p>
+        <h2>Pruebas del Módulo</h2>
+        <p>Para verificar que el módulo funciona correctamente, sigue estos pasos:</p>
         <ol>
-            <li>Accede al flujo de compra del usuario en tu sitio web.</li>
-            <li>Selecciona el producto que deseas comprar y procede al pago.</li>
-            <li>Verifica que el método de pago de Atix esté disponible y seleccionado por defecto si es el único método de pago.</li>
+            <li>Accede al flujo de compra en tu sitio web.</li>
+            <li>Selecciona un producto y procede al pago.</li>
+            <li>Confirma que el método de pago <strong>Atix</strong> esté disponible y seleccionado por defecto (si es el único método configurado).</li>
         </ol>
         <div style="text-align: center;">
             <div style="margin: 20px 0;">
-            <img src="image5.png" alt="Selección de pasarela de pago" class="screenshot" style="width: 100%; max-width: 1000px;"/>
+                <img src="image5.png" alt="Selección del método de pago" class="screenshot" style="width: 100%; max-width: 1000px;"/>
             </div>
         </div>
-        <p>Una vez seleccionado el método de pago, completa la transacción y verifica que se procese correctamente.</p>
+        <p>Completa la transacción y verifica que se procese correctamente.</p>
         <div style="text-align: center;">
             <div style="margin: 20px 0;">
-            <img src="image6.png" alt="Pasarela de pago de Atix" class="screenshot" style="width: 100%; max-width: 1000px;"/>
+                <img src="image6.png" alt="Confirmación de transacción" class="screenshot" style="width: 100%; max-width: 1000px;"/>
             </div>
         </div>
-        <p>Si la transacción es exitosa, deberías ver una confirmación en pantalla. Si hay algún problema, revisa los logs y la configuración del módulo.</p>
+        <p>Si la transacción es exitosa, deberías ver una confirmación en pantalla. En caso de errores, revisa los logs y verifica la configuración del módulo.</p>
     </div>
 </body>
 </html>

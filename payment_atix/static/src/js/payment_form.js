@@ -2,7 +2,8 @@
 
 import { _t } from '@web/core/l10n/translation';
 import { Component } from '@odoo/owl';
-import { jsonrpc } from "@web/core/network/rpc_service";
+//import { jsonrpc } from "@web/core/network/rpc_service";
+import { rpc, RPCError } from '@web/core/network/rpc';
 import PaymentForm from '@payment/js/payment_form';
 
 const loadScript = (src) => new Promise((resolve, reject) => {
@@ -20,8 +21,9 @@ PaymentForm.include({
                 return this._super(...arguments)
             }
             console.log(processingValues)
+            console.log(paymentMethodCode)
 
-            loadScript("https://gateway.atix.com.pe/cdn/gbcpepaymentjs/V1.1/ATIXPaymentGateway.min.js")
+            loadScript(processingValues.url_atix_js)
             .then(()=>{
                 console.log(processingValues)
                 $.fn.GBCPE_PaymentGateway.setup.Apikey = processingValues.atix_apikey;
@@ -37,7 +39,7 @@ PaymentForm.include({
                         if (error){
                             alert(error)
                         }else{
-                            jsonrpc("/payment/atix/update_token",
+                            rpc("/payment/atix/update_token",
                                 {tx_id:processingValues.tx_id,token:Token}
                             ).then((res)=>{
                                 if(res){

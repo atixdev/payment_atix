@@ -9,6 +9,16 @@ from odoo.addons.payment_atix import const
 _logger = logging.getLogger(__name__)
 
 
+URL_ATIX_JS = {
+    "test":"https://gateway.atix.com.pe/cdn/TEST/v1.1/ATIXPaymentGateway.min.js",
+    "enabled":"https://gateway.atix.com.pe/cdn/gbcpepaymentjs/V1.1/ATIXPaymentGateway.min.js"
+}
+
+URL_ATIX_API = {
+    "test":"https://gateway.atix.com.pe/PaymentGatewayJWS_Sandbox/Service1.svc",
+    "enabled":"https://gateway.atix.com.pe/PaymentGatewayJWS/Service1.svc"
+}
+
 class PaymentTransaction(models.Model):
     _inherit = "payment.transaction"
 
@@ -21,7 +31,9 @@ class PaymentTransaction(models.Model):
             "PEN": self.provider_id.atix_apikey_pen,
             "USD": self.provider_id.atix_apikey_usd
         }
-        res.update(atix_apikey=API_KEY.get(self.currency_id.name, "*") or "*", tx_id=self.id)
+        res.update(atix_apikey=API_KEY.get(self.currency_id.name, "*") or "*", 
+                    tx_id=self.id,
+                    url_atix_js=URL_ATIX_JS[self.provider_id.state])
         return res
 
     def _get_specific_rendering_values(self, processing_values):
@@ -46,7 +58,7 @@ class PaymentTransaction(models.Model):
             "User": "wzzzGE38zPk5pUKWd7jhN",
             "Password": "YkSzED4ty92BjMa2SXYsF",
             "Version": "V1.1",
-            "api_url": "https://gateway.atix.com.pe/PaymentGatewayJWS/Service1.svc/GBCPE_AuthenticateUser",
+            "api_url": f"{URL_ATIX_API[self.provider_id.state]}/GBCPE_AuthenticateUser",
             "Apikey": API_KEY.get(self.currency_id.name, "*") or "*",
             "Data": json.dumps({"country": self.currency_id.name,
                                 "totalamount": str(self.amount),
@@ -63,7 +75,7 @@ class PaymentTransaction(models.Model):
         return res
 
     def _request_payment_atix_status(self):
-        url = "https://gateway.atix.com.pe/PaymentGatewayJWS/Service1.svc/GBCPE_ResultTransaction"
+        url = f"{URL_ATIX_API[self.provider_id.state]}/GBCPE_ResultTransaction"
 
         payload = json.dumps({"Token": self.atix_token})
         headers = {
@@ -77,7 +89,7 @@ class PaymentTransaction(models.Model):
             if data.get("ResultCode", False) == "00":
                 self.write({"atix_reference_code": data.get("ReferenceCode")})
                 self._set_done()
-                self._finalize_post_processing()
+                self._post_process()
             elif data.get("ReferenceCode", False) and data.get("ResultCode", False) == '-99':
                 self.write({"atix_reference_code": data.get("ReferenceCode")})
                 self._set_canceled(
