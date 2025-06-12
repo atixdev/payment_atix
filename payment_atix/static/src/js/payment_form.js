@@ -19,11 +19,9 @@ PaymentForm.include({
             if (providerCode != "atix"){
                 return this._super(...arguments)
             }
-            console.log(processingValues)
 
-            loadScript("https://gateway.atix.com.pe/cdn/gbcpepaymentjs/V1.1/ATIXPaymentGateway.min.js")
+            loadScript(processingValues.url_atix_js)
             .then(()=>{
-                console.log(processingValues)
                 $.fn.GBCPE_PaymentGateway.setup.Apikey = processingValues.atix_apikey;
                 $.fn.GBCPE_PaymentGateway.setup.Email = processingValues.partner_email //valor opcional;
                 $.fn.GBCPE_PaymentGateway.setup.Currency = processingValues.currency_name;

@@ -2,6 +2,8 @@
     "name":"Proveedor de pago: ATIX",
     'category': 'Accounting/Payment Providers',
     "summary": 'Integración con la pasarela de pago Atix',
+    'licencia':'OPL-1',
+    'author':'ATIX',
     'description': """
         Este módulo permite la integración de Odoo con la pasarela de pago Atix, facilitando la gestión de pagos en línea de manera segura y eficiente.
 
