@@ -6,52 +6,27 @@ import { Component } from '@odoo/owl';
 import { rpc, RPCError } from '@web/core/network/rpc';
 import PaymentForm from '@payment/js/payment_form';
 
-const loadScript = (src) => new Promise((resolve, reject) => {
-    let script = document.createElement('script')
-    script.src = src
-    script.onload = resolve
-    script.onerror = reject
-    document.head.appendChild(script)
-  })
-
 PaymentForm.include({
     _processDirectFlow(providerCode, paymentOptionId, paymentMethodCode, processingValues) {
-        var self = this;
-            if (providerCode != "atix"){
-                return this._super(...arguments)
-            }
-            console.log(processingValues)
-            console.log(paymentMethodCode)
+        if (providerCode !== "atix") {
+            return this._super(...arguments);
+        }
 
-            loadScript(processingValues.url_atix_js)
-            .then(()=>{
-                console.log(processingValues)
-                $.fn.GBCPE_PaymentGateway.setup.Apikey = processingValues.atix_apikey;
-                $.fn.GBCPE_PaymentGateway.setup.Email = processingValues.partner_email //valor opcional;
-                $.fn.GBCPE_PaymentGateway.setup.Currency = processingValues.currency_name;
-                $.fn.GBCPE_PaymentGateway.setup.Totalamount = processingValues.amount;
-                $.fn.GBCPE_PaymentGateway.setup.Reference = processingValues.reference;
-
-                    $.fn.GBCPE_PaymentGateway(function (Result) {
-                        var error = Result[0].Error;
-                        var Url = Result[0].Url;
-                        var Token = Result[0].Token;
-                        if (error){
-                            alert(error)
-                        }else{
-                            rpc("/payment/atix/update_token",
-                                {tx_id:processingValues.tx_id,token:Token}
-                            ).then((res)=>{
-                                if(res){
-                                    window.location.href = Url;
-                                }else{
-                                    alert("Error")
-                                }
-                            }) 
-                        }
-                    })
-                
+        return rpc("/payment/atix/authenticate", { tx_id: processingValues.tx_id })
+            .then((result) => {
+                if (result && result.redirect_url) {
+                    window.location.href = result.redirect_url;
+                } else {
+                    const errorMsg = (result && result.error) || _t("Error al procesar el pago con ATIX.");
+                    this._displayErrorDialog(_t("Error de Pago"), errorMsg);
+                }
             })
+            .catch(() => {
+                this._displayErrorDialog(
+                    _t("Error de Pago"),
+                    _t("No se pudo conectar con la pasarela de pago. Intente nuevamente.")
+                );
+            });
     },
     async _initiatePaymentFlow(providerCode, paymentOptionId, paymentMethodCode, flow) {
             if (providerCode != "atix"){

@@ -9,6 +9,18 @@ _logger = logging.getLogger(__name__)
 
 class PaymentATIXController(http.Controller):
 
+    @http.route("/payment/atix/authenticate", type="json", auth="public", methods=["POST"], csrf=False)
+    def atix_authenticate(self, tx_id, **kwargs):
+        tx_sudo = request.env["payment.transaction"].sudo().browse(tx_id)
+        redirect_url = tx_sudo._authenticate_with_atix()
+
+        # El token está embebido en la URL: ?token=...
+        token = redirect_url.split("token=")[-1] if "token=" in redirect_url else ""
+        tx_sudo.write({"atix_token": token})
+        tx_sudo._set_pending()
+
+        return {"redirect_url": redirect_url}
+
     @http.route("/payment/atix/update_token",type="json",auth="public",methods=["POST"],csrf=False)
     def PaymentATIXUpdateToken(self,tx_id,token):
         try:

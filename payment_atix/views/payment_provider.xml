@@ -11,7 +11,6 @@
                     <field name="atix_apikey_pen"/>
                     <field name="atix_apikey_usd"/>
                     <field name="payment_atix_return_url"/>
-                    <field name="redirect_form_view_id"/>
                     <field name="support_refund"/>
                 </group>
             </group>

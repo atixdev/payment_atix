@@ -27,13 +27,9 @@ class PaymentTransaction(models.Model):
 
     def _get_processing_values(self):
         res = super(PaymentTransaction, self)._get_processing_values()
-        API_KEY = {
-            "PEN": self.provider_id.atix_apikey_pen,
-            "USD": self.provider_id.atix_apikey_usd
-        }
-        res.update(atix_apikey=API_KEY.get(self.currency_id.name, "*") or "*", 
-                    tx_id=self.id,
-                    url_atix_js=URL_ATIX_JS[self.provider_id.state])
+        if self.provider_code != 'atix':
+            return res
+        res.update(tx_id=self.id)
         return res
 
     def _get_specific_rendering_values(self, processing_values):
@@ -48,31 +44,37 @@ class PaymentTransaction(models.Model):
         res = super()._get_specific_rendering_values(processing_values)
         if self.provider_code != 'atix':
             return res
+        return {}
 
-        API_KEY = {
+    def _authenticate_with_atix(self):
+        api_key_map = {
             "PEN": self.provider_id.atix_apikey_pen,
-            "USD": self.provider_id.atix_apikey_usd
+            "USD": self.provider_id.atix_apikey_usd,
         }
+        api_key = api_key_map.get(self.currency_id.name) or ""
 
-        res = {
-            "User": "wzzzGE38zPk5pUKWd7jhN",
-            "Password": "YkSzED4ty92BjMa2SXYsF",
+        data_dict = {
+            "totalamount": self.amount,
+            "currency": self.currency_id.name,
+            "reference": self.reference,
+            "email": self.partner_email or "",
+        }
+        payload = json.dumps({
+            "Apikey": api_key,
             "Version": "V1.1",
-            "api_url": f"{URL_ATIX_API[self.provider_id.state]}/GBCPE_AuthenticateUser",
-            "Apikey": API_KEY.get(self.currency_id.name, "*") or "*",
-            "Data": json.dumps({"country": self.currency_id.name,
-                                "totalamount": str(self.amount),
-                                "reference": self.reference,
-                                "phone": "",
-                                "urlorigi": "http://localhost:9007",
-                                "mobile": "", "typeconection": {},
-                                "protocol": "http:",
-                                "navigator": "Chrome 119",
-                                "jsondata": "",
-                                "reference2": ""})
-        }
+            "Data": json.dumps(data_dict),
+        })
 
-        return res
+        response = requests.post(
+            f"{URL_ATIX_API[self.provider_id.state]}/GBCPE_AuthenticateUser",
+            headers={"Content-Type": "text/plain"},
+            data=payload,
+            timeout=30,
+        )
+
+        result = response.json()
+        redirect_url = result[0].get("Url")
+        return redirect_url
 
     def _request_payment_atix_status(self):
         url = f"{URL_ATIX_API[self.provider_id.state]}/GBCPE_ResultTransaction"
