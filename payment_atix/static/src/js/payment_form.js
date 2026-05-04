@@ -1,59 +1,61 @@
 /** @odoo-module **/
 
+// SPEC-001: Migración a autenticación server-side.
+// Se elimina la carga dinámica de ATIXPaymentGateway.min.js y toda llamada
+// directa al gateway de ATIX desde el navegador.
+
 import { _t } from '@web/core/l10n/translation';
-import { Component } from '@odoo/owl';
 import { jsonrpc } from "@web/core/network/rpc_service";
 import PaymentForm from '@payment/js/payment_form';
 
-const loadScript = (src) => new Promise((resolve, reject) => {
-    let script = document.createElement('script')
-    script.src = src
-    script.onload = resolve
-    script.onerror = reject
-    document.head.appendChild(script)
-  })
-
 PaymentForm.include({
-    _processDirectFlow(providerCode, paymentOptionId, paymentMethodCode, processingValues) {
-        var self = this;
-            if (providerCode != "atix"){
-                return this._super(...arguments)
-            }
 
-            loadScript(processingValues.url_atix_js)
-            .then(()=>{
-                $.fn.GBCPE_PaymentGateway.setup.Apikey = processingValues.atix_apikey;
-                $.fn.GBCPE_PaymentGateway.setup.Email = processingValues.partner_email //valor opcional;
-                $.fn.GBCPE_PaymentGateway.setup.Currency = processingValues.currency_name;
-                $.fn.GBCPE_PaymentGateway.setup.Totalamount = processingValues.amount;
-                $.fn.GBCPE_PaymentGateway.setup.Reference = processingValues.reference;
-
-                    $.fn.GBCPE_PaymentGateway(function (Result) {
-                        var error = Result[0].Error;
-                        var Url = Result[0].Url;
-                        var Token = Result[0].Token;
-                        if (error){
-                            alert(error)
-                        }else{
-                            jsonrpc("/payment/atix/update_token",
-                                {tx_id:processingValues.tx_id,token:Token}
-                            ).then((res)=>{
-                                if(res){
-                                    window.location.href = Url;
-                                }else{
-                                    alert("Error")
-                                }
-                            }) 
-                        }
-                    })
-                
-            })
-    },
+    /**
+     * SPEC-001 §3.4.3 — Sin cambios.
+     * Fuerza el flujo a "direct" para ATIX, independientemente del valor original de `flow`.
+     */
     async _initiatePaymentFlow(providerCode, paymentOptionId, paymentMethodCode, flow) {
-            if (providerCode != "atix"){
-                return this._super(...arguments)
-            }else{
-                return this._super(providerCode, paymentOptionId, paymentMethodCode,"direct")
-            }
+        if (providerCode !== "atix") {
+            return this._super(...arguments);
         }
+        return this._super(providerCode, paymentOptionId, paymentMethodCode, "direct");
+    },
+
+    /**
+     * SPEC-001 §3.4.2 — Nuevo flujo server-side.
+     *
+     * Ya no se carga el SDK de ATIX ni se llama directamente a GBCPE_AuthenticateUser.
+     * El backend se encarga de la autenticación y retorna únicamente la URL de redirección.
+     *
+     * Flujo:
+     *   1. Llamar a /payment/atix/authenticate con tx_id
+     *   2. Si hay redirect_url → redirigir al navegador
+     *   3. Si hay error → mostrar mensaje al usuario
+     */
+    _processDirectFlow(providerCode, paymentOptionId, paymentMethodCode, processingValues) {
+        if (providerCode !== "atix") {
+            return this._super(...arguments);
+        }
+
+        return jsonrpc("/payment/atix/authenticate", { tx_id: processingValues.tx_id })
+            .then((result) => {
+                if (result && result.redirect_url) {
+                    window.location.href = result.redirect_url;
+                } else {
+                    const errorMsg = (result && result.error)
+                        || _t("Error al procesar el pago con ATIX.");
+                    this._displayErrorDialog(
+                        _t("Error de Pago"),
+                        errorMsg
+                    );
+                }
+            })
+            .catch(() => {
+                this._displayErrorDialog(
+                    _t("Error de Pago"),
+                    _t("No se pudo conectar con la pasarela de pago. Intente nuevamente.")
+                );
+            });
+    },
+
 });
